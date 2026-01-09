@@ -10,10 +10,10 @@ import java.util.List;
 @Service
 public class AddressBookService {
 
-    private List<AddressBookModel> contacts = new ArrayList<>();
+    private final List<AddressBookModel> contacts = new ArrayList<>();
     private int contactId = 1;
 
-    // ---- UC2-POST ----
+    // ---- UC3-POST ----
     public AddressBookModel addContact(AddressBookDTO dto) {
         AddressBookModel model =
                 new AddressBookModel(contactId++, dto.getName(), dto.getPhoneNumber(), dto.getCity());
@@ -21,34 +21,32 @@ public class AddressBookService {
         return model;
     }
 
-    // ---- UC2-GET-ALL ----
+    // ---- UC3-GET-ALL ----
     public List<AddressBookModel> getAllContacts() {
         return contacts;
     }
 
-    // ---- UC2-GET-BY-ID ----
+    // ---- UC3-GET-BY-ID ----
     public AddressBookModel getContactById(int id) {
         return contacts.stream()
-                .filter(contact -> contact.getId() == id)
+                .filter(c -> c.getId() == id)
                 .findFirst()
                 .orElse(null);
     }
 
-    // ---- UC2-PUT ----
+    // ---- UC3-PUT ----
     public AddressBookModel updateContact(int id, AddressBookDTO dto) {
         AddressBookModel contact = getContactById(id);
         if (contact != null) {
-            contacts.remove(contact);
-            AddressBookModel updated =
-                    new AddressBookModel(id, dto.getName(), dto.getPhoneNumber(), dto.getCity());
-            contacts.add(updated);
-            return updated;
+            contact.setName(dto.getName());
+            contact.setPhoneNumber(dto.getPhoneNumber());
+            contact.setCity(dto.getCity());
         }
-        return null;
+        return contact;
     }
 
-    // ---- UC2-DELETE ----
+    // ---- UC3-DELETE ----
     public boolean deleteContact(int id) {
-        return contacts.removeIf(contact -> contact.getId() == id);
+        return contacts.removeIf(c -> c.getId() == id);
     }
 }
