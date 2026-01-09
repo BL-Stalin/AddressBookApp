@@ -1,5 +1,7 @@
 package com.bridgelabz.addressbookapp.controller;
 
+import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
+import com.bridgelabz.addressbookapp.model.AddressBookModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -9,47 +11,54 @@ import java.util.List;
 @RequestMapping("/addressbook")
 public class AddressBookController {
 
-    private List<String> contacts = new ArrayList<>();
+    private List<AddressBookModel> contacts = new ArrayList<>();
+    private int contactId = 1;
 
     // ---- UC2-GET-ALL ----
     @GetMapping
-    public List<String> getAllContacts() {
+    public List<AddressBookModel> getAllContacts() {
         return contacts;
     }
 
     // ---- UC2-GET-BY-ID ----
     @GetMapping("/{id}")
-    public String getContactById(@PathVariable int id) {
-        if (id >= 0 && id < contacts.size()) {
-            return contacts.get(id);
-        }
-        return "Contact not found";
+    public AddressBookModel getContactById(@PathVariable int id) {
+        return contacts.stream()
+                .filter(contact -> contact.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     // ---- UC2-POST ----
     @PostMapping
-    public String addContact(@RequestBody String name) {
-        contacts.add(name);
-        return "Contact added successfully";
+    public AddressBookModel addContact(@RequestBody AddressBookDTO dto) {
+        AddressBookModel model =
+                new AddressBookModel(contactId++, dto.getName(), dto.getPhoneNumber(), dto.getCity());
+        contacts.add(model);
+        return model;
     }
 
     // ---- UC2-PUT ----
     @PutMapping("/{id}")
-    public String updateContact(@PathVariable int id, @RequestBody String name) {
-        if (id >= 0 && id < contacts.size()) {
-            contacts.set(id, name);
-            return "Contact updated successfully";
+    public AddressBookModel updateContact(
+            @PathVariable int id,
+            @RequestBody AddressBookDTO dto) {
+
+        AddressBookModel contact = getContactById(id);
+        if (contact != null) {
+            contacts.remove(contact);
+            AddressBookModel updated =
+                    new AddressBookModel(id, dto.getName(), dto.getPhoneNumber(), dto.getCity());
+            contacts.add(updated);
+            return updated;
         }
-        return "Contact not found";
+        return null;
     }
 
     // ---- UC2-DELETE ----
     @DeleteMapping("/{id}")
     public String deleteContact(@PathVariable int id) {
-        if (id >= 0 && id < contacts.size()) {
-            contacts.remove(id);
-            return "Contact deleted successfully";
-        }
-        return "Contact not found";
+        boolean removed = contacts.removeIf(c -> c.getId() == id);
+        return removed ? "Contact deleted successfully" : "Contact not found";
     }
 }
