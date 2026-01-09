@@ -26,7 +26,24 @@ public class AddressBookModel {
         return phoneNumber;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getCity() {
         return city;
     }
+
 }
