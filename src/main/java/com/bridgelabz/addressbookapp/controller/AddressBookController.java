@@ -6,6 +6,7 @@ import com.bridgelabz.addressbookapp.service.AddressBookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -17,9 +18,10 @@ public class AddressBookController {
     @Autowired
     private AddressBookService addressBookService;
 
-    // ---- UC2-POST ----
+    // ---- UC1-POST ----
     @PostMapping
-    public AddressBookModel addContact(@RequestBody AddressBookDTO dto) {
+    public AddressBookModel addContact(
+            @Valid @RequestBody AddressBookDTO dto) {
         log.info("Adding address book contact with name: {}", dto.getName());
         return addressBookService.addContact(dto);
     }
@@ -42,7 +44,7 @@ public class AddressBookController {
     @PutMapping("/{id}")
     public AddressBookModel updateContact(
             @PathVariable int id,
-            @RequestBody AddressBookDTO dto) {
+            @Valid @RequestBody AddressBookDTO dto) {
         log.info("Updating address book contact with id: {}", id);
         return addressBookService.updateContact(id, dto);
     }
